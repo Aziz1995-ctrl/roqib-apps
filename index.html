@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Roqib Apps</title>
+    
+    <!-- Fonts: Quicksand for playful modern look -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons: Phosphor Icons (Modern & Clean) -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    
+    <!-- Chart.js for Progress Graphs -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Tailwind Config -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Quicksand', 'sans-serif'],
+                    },
+                    colors: {
+                        sage: {
+                            DEFAULT: '#9EB384',
+                            light: '#CEDEBD',
+                            dark: '#435334'
+                        },
+                        beige: {
+                            DEFAULT: '#F4F1EB',
+                            dark: '#E5E0D5'
+                        },
+                        peach: {
+                            DEFAULT: '#F9C08D',
+                            light: '#FFD8B1'
+                        },
+                        dark: {
+                            bg: '#121212',
+                            card: '#1E1E1E',
+                            text: '#E0E0E0'
+                        }
+                    },
+                    animation: {
+                        'pop': 'pop 0.3s ease-out forwards',
+                        'slide-up': 'slideUp 0.3s ease-out forwards',
+                    },
+                    keyframes: {
+                        pop: {
+                            '0%': { transform: 'scale(0.9)', opacity: '0' },
+                            '100%': { transform: 'scale(1)', opacity: '1' },
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(100%)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        /* Custom Styles for aesthetics and removing scrollbars in UI elements */
+        body {
+            -webkit-tap-highlight-color: transparent;
+        }
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        
+        /* Checkbox Styling */
+        .habit-checkbox:checked + div {
+            background-color: #9EB384;
+            border-color: #9EB384;
+        }
+        .dark .habit-checkbox:checked + div {
+            background-color: #CEDEBD;
+            border-color: #CEDEBD;
+        }
+        .habit-checkbox:checked + div svg {
+            opacity: 1;
+        }
+        .app-container {
+            /* Mobile App simulation on Desktop */
+            max-width: 480px;
+            margin: 0 auto;
+            min-height: 100vh;
+            background-color: #F4F1EB;
+            box-shadow: 0 0 20px rgba(0,0,0,0.05);
+            position: relative;
+            overflow-x: hidden;
+        }
+        .dark .app-container {
+            background-color: #121212;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
+        
+        /* Tasbih Ripple Effect */
+        .tasbih-btn:active {
+            transform: scale(0.95);
+        }
+    </style>
+</head>
+<body class="bg-gray-100 dark:bg-gray-900 transition-colors duration-300">
+
+    <!-- App Container (Mobile Width Constrained) -->
+    <div class="app-container flex flex-col pb-20 dark:text-dark-text transition-colors duration-300">
+        
+        <!-- Top Bar -->
+        <div class="flex justify-between items-center p-6 pb-2">
+            <h1 class="text-xl font-bold text-sage-dark dark:text-sage-light flex items-center gap-2">
+                <i class="ph-fill ph-leaf text-2xl"></i> Roqib Apps
+            </h1>
+            <button onclick="toggleDarkMode()" class="p-2 rounded-full bg-white dark:bg-dark-card shadow-sm text-gray-600 dark:text-gray-300 active:scale-95 transition-transform">
+                <i id="theme-icon" class="ph-bold ph-moon text-xl"></i>
+            </button>
+        </div>
+
+        <!-- Dynamic Content Area -->
+        <main id="main-content" class="flex-1 overflow-y-auto hide-scrollbar px-6 pb-6">
+            
+            <!-- VIEW: HOME / DASHBOARD -->
+            <div id="view-home" class="view-section animate-pop">
+                <!-- Greeting & Calendar Card -->
+                <div class="bg-white dark:bg-dark-card rounded-3xl p-6 shadow-sm mb-6 relative overflow-hidden">
+                    <div class="absolute -right-6 -top-6 w-24 h-24 bg-sage/20 rounded-full blur-xl"></div>
+                    <div class="absolute -left-6 -bottom-6 w-24 h-24 bg-peach/20 rounded-full blur-xl"></div>
+                    
+                    <h2 id="greeting-text" class="text-2xl font-bold text-gray-800 dark:text-white mb-1 relative z-10">Assalamu'alaikum!</h2>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mb-4 relative z-10">Semoga harimu penuh berkah.</p>
+                    
+                    <div class="bg-beige dark:bg-gray-800 rounded-2xl p-4 relative z-10">
+                        <div class="flex items-center gap-3 mb-2">
+                            <div class="bg-sage text-white p-2 rounded-xl">
+                                <i class="ph-bold ph-calendar-blank text-lg"></i>
+                            </div>
+                            <div>
+                                <p id="cal-masehi" class="text-sm font-bold text-gray-800 dark:text-white">Senin, 1 Jan 2024</p>
+                                <p id="cal-hijri" class="text-xs text-sage-dark dark:text-sage-light font-medium">19 Jumadil Akhir 1445 H</p>
+                                <p id="cal-jawa" class="text-xs text-peach font-medium mt-0.5">Pasaran: Pon</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Motivation Quote -->
+                <div class="bg-sage-dark text-white rounded-3xl p-5 shadow-sm mb-6 relative">
+                    <i class="ph-fill ph-quotes text-3xl opacity-20 absolute top-4 right-4"></i>
+                    <p id="daily-quote" class="text-sm font-medium italic relative z-10 pr-6">
+                        "Berlombalah dalam kebaikan..."
+                    </p>
+                </div>
+
+                <!-- Streak & Progress Brief -->
+                <div class="flex gap-4 mb-6">
+                    <div class="flex-1 bg-white dark:bg-dark-card rounded-3xl p-4 shadow-sm flex items-center gap-3">
+                        <div class="bg-peach/20 text-peach p-3 rounded-2xl">
+                            <i class="ph-fill ph-fire text-xl"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">Streak Ibadah</p>
+                            <p class="text-lg font-bold text-gray-800 dark:text-white"><span id="streak-count">0</span> Hari</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Habit Checklist -->
+                <div>
+                    <div class="flex justify-between items-end mb-4">
+                        <h3 class="text-lg font-bold text-gray-800 dark:text-white">Checklist Harian</h3>
+                        <span id="checklist-progress" class="text-sm font-bold text-sage">0/10</span>
+                    </div>
+                    
+                    <div id="habit-list" class="grid grid-cols-2 gap-2">
+                        <!-- Habits will be rendered here by JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW: TASBIH -->
+            <div id="view-tasbih" class="view-section hidden animate-pop h-full flex flex-col items-center justify-center">
+                <div class="text-center mb-8">
+                    <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-2">Tasbih Digital</h2>
+                    <p class="text-gray-500 dark:text-gray-400 text-sm">Berdzikir mengingat Allah</p>
+                </div>
+
+                <!-- Big Counter Button -->
+                <div class="relative w-64 h-64 mb-10 flex items-center justify-center">
+                    <!-- Decorative outer rings -->
+                    <div class="absolute inset-0 rounded-full border-4 border-sage/20 animate-[spin_10s_linear_infinite]"></div>
+                    <div class="absolute inset-4 rounded-full border-4 border-peach/30 border-dashed animate-[spin_15s_linear_infinite_reverse]"></div>
+                    
+                    <!-- Main Button -->
+                    <button onclick="incrementTasbih()" class="tasbih-btn relative z-10 w-48 h-48 bg-gradient-to-br from-sage to-sage-dark rounded-full shadow-[0_10px_40px_rgba(158,179,132,0.5)] flex flex-col items-center justify-center text-white transition-all duration-200">
+                        <span id="tasbih-count" class="text-6xl font-bold tracking-tighter">0</span>
+                        <span class="text-sm opacity-80 mt-2">Tap untuk hitung</span>
+                    </button>
+                </div>
+
+                <!-- Controls -->
+                <div class="flex gap-4">
+                    <button onclick="resetTasbih()" class="px-6 py-3 bg-white dark:bg-dark-card rounded-2xl shadow-sm text-red-500 font-bold flex items-center gap-2 active:scale-95 transition-transform">
+                        <i class="ph-bold ph-arrow-counter-clockwise"></i> Reset
+                    </button>
+                </div>
+            </div>
+
+            <!-- VIEW: JOURNAL -->
+            <div id="view-journal" class="view-section hidden animate-pop flex flex-col h-[80vh]">
+                <div class="mb-4">
+                    <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-2">Jurnal & Refleksi</h2>
+                    <p class="text-gray-500 dark:text-gray-400 text-sm">Tulis rasa syukur dan evaluasi hari ini.</p>
+                </div>
+                
+                <div class="flex-1 flex flex-col bg-white dark:bg-dark-card rounded-3xl shadow-sm overflow-hidden border border-gray-100 dark:border-gray-800">
+                    <div class="bg-beige dark:bg-gray-800 p-4 border-b border-gray-100 dark:border-gray-700 flex items-center gap-2">
+                        <i class="ph-fill ph-book-open text-sage text-xl"></i>
+                        <span id="journal-date" class="font-bold text-gray-700 dark:text-gray-200 text-sm">Hari ini</span>
+                    </div>
+                    <textarea id="journal-input" class="flex-1 w-full p-5 bg-transparent resize-none focus:outline-none text-gray-700 dark:text-gray-200" placeholder="Alhamdulillah hari ini saya bisa menyelesaikan..."></textarea>
+                </div>
+                <p id="journal-status" class="text-xs text-center text-gray-400 mt-3 h-4"></p>
+            </div>
+
+            <!-- VIEW: PROGRESS -->
+            <div id="view-progress" class="view-section hidden animate-pop">
+                <div class="mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-2">Laporan Progress</h2>
+                    <p class="text-gray-500 dark:text-gray-400 text-sm">Pantau konsistensi ibadahmu</p>
+                </div>
+
+                <!-- Stats summary -->
+                <div class="grid grid-cols-2 gap-4 mb-6">
+                    <div class="bg-white dark:bg-dark-card rounded-3xl p-4 shadow-sm text-center">
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">Rata-rata 7 Hari</p>
+                        <p id="avg-7days" class="text-2xl font-bold text-sage">0%</p>
+                    </div>
+                    <div class="bg-white dark:bg-dark-card rounded-3xl p-4 shadow-sm text-center">
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">Total Selesai</p>
+                        <p id="total-completed" class="text-2xl font-bold text-peach">0</p>
+                    </div>
+                </div>
+
+                <!-- Chart Card -->
+                <div class="bg-white dark:bg-dark-card rounded-3xl p-5 shadow-sm mb-6">
+                    <h3 class="text-sm font-bold text-gray-700 dark:text-gray-200 mb-4">Grafik 7 Hari Terakhir</h3>
+                    <div class="relative h-48 w-full">
+                        <canvas id="progressChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Detailed Progress per Habit -->
+                <div class="bg-white dark:bg-dark-card rounded-3xl p-5 shadow-sm mb-6">
+                    <h3 class="text-sm font-bold text-gray-700 dark:text-gray-200 mb-4">Detail per Kegiatan (7 Hari)</h3>
+                    <div id="detailed-progress" class="space-y-3">
+                        <!-- Rendered by JS -->
+                    </div>
+                </div>
+            </div>
+
+        </main>
+
+        <!-- Bottom Navigation -->
+        <nav class="absolute bottom-0 w-full bg-white/90 dark:bg-dark-card/90 backdrop-blur-md border-t border-gray-100 dark:border-gray-800 px-6 py-4 flex justify-between items-center z-50 rounded-t-3xl shadow-[0_-5px_20px_rgba(0,0,0,0.02)]">
+            <button onclick="switchView('home')" class="nav-btn text-sage flex flex-col items-center gap-1 active:scale-95 transition-transform w-16" data-target="home">
+                <i class="ph-fill ph-house text-2xl"></i>
+                <span class="text-[10px] font-bold">Home</span>
+            </button>
+            <button onclick="switchView('tasbih')" class="nav-btn text-gray-400 dark:text-gray-500 hover:text-sage flex flex-col items-center gap-1 active:scale-95 transition-transform w-16" data-target="tasbih">
+                <i class="ph-bold ph-hand-tap text-2xl"></i>
+                <span class="text-[10px] font-bold">Tasbih</span>
+            </button>
+            <button onclick="switchView('journal')" class="nav-btn text-gray-400 dark:text-gray-500 hover:text-sage flex flex-col items-center gap-1 active:scale-95 transition-transform w-16" data-target="journal">
+                <i class="ph-bold ph-notebook text-2xl"></i>
+                <span class="text-[10px] font-bold">Jurnal</span>
+            </button>
+            <button onclick="switchView('progress')" class="nav-btn text-gray-400 dark:text-gray-500 hover:text-sage flex flex-col items-center gap-1 active:scale-95 transition-transform w-16" data-target="progress">
+                <i class="ph-bold ph-chart-bar text-2xl"></i>
+                <span class="text-[10px] font-bold">Progress</span>
+            </button>
+        </nav>
+        
+        <!-- Toast Notification -->
+        <div id="toast" class="fixed top-5 left-1/2 -translate-x-1/2 bg-gray-800 text-white px-4 py-2 rounded-full shadow-lg text-sm font-medium opacity-0 pointer-events-none transition-opacity duration-300 z-[100]">
+            Alhamdulillah, selesai!
+        </div>
+
+    </div>
+
+    <!-- Application Logic -->
+    <script>
+        // --- DATA & CONFIG ---
+        const STORAGE_KEY = 'muslim_produktif_data';
+        
+        const HABIT_LIST = [
+            { id: 'jamaah_subuh', label: 'Jamaah Subuh', icon: '🕌', color: 'bg-emerald-100 text-emerald-600' },
+            { id: 'jamaah_dzuhur', label: 'Jamaah Dzuhur', icon: '🕌', color: 'bg-emerald-100 text-emerald-600' },
+            { id: 'jamaah_asar', label: 'Jamaah Asar', icon: '🕌', color: 'bg-emerald-100 text-emerald-600' },
+            { id: 'jamaah_maghrib', label: 'Jamaah Maghrib', icon: '🕌', color: 'bg-emerald-100 text-emerald-600' },
+            { id: 'jamaah_isya', label: 'Jamaah Isya', icon: '🕌', color: 'bg-emerald-100 text-emerald-600' },
+            { id: 'tahajjud', label: 'Sholat Tahajjud', icon: '🌙', color: 'bg-indigo-100 text-indigo-600' },
+            { id: 'hajat', label: 'Sholat Hajat', icon: '🤲', color: 'bg-blue-100 text-blue-600' },
+            { id: 'dhuha', label: 'Sholat Dhuha', icon: '☀️', color: 'bg-amber-100 text-amber-600' },
+            { id: 'quran', label: 'Baca Al Qur\'an', icon: '📖', color: 'bg-teal-100 text-teal-600' },
+            { id: 'dzikir_wajib', label: 'Dzikir Wajib', icon: '📿', color: 'bg-sage-light text-sage-dark' },
+            { id: 'dzikir_sunnah', label: 'Dzikir Sunnah', icon: '🌅', color: 'bg-orange-100 text-orange-600' },
+            { id: 'kerja', label: 'Kerja / Belajar Fokus', icon: '💻', color: 'bg-gray-200 text-gray-700' },
+            { id: 'olahraga', label: 'Olah Raga', icon: '🏃', color: 'bg-red-100 text-red-600' },
+            { id: 'bersih', label: 'Bersih-bersih', icon: '🧹', color: 'bg-cyan-100 text-cyan-600' },
+            { id: 'sedekah', label: 'Sedekah / Kebaikan', icon: '💝', color: 'bg-pink-100 text-pink-600' },
+            { id: 'puasa_sunnah', label: 'Puasa Sunnah', icon: '🌅', color: 'bg-purple-100 text-purple-600' },
+        ];
+
+        const QUOTES = [
+            "Sebaik-baik manusia adalah yang paling bermanfaat bagi orang lain. (HR. Ahmad)",
+            "Barangsiapa menempuh jalan untuk menuntut ilmu, Allah akan mudahkan baginya jalan menuju surga. (HR. Muslim)",
+            "Sesungguhnya bersama kesulitan ada kemudahan. (QS. Al-Insyirah: 6)",
+            "Janganlah kamu bersedih, sesungguhnya Allah bersama kita. (QS. At-Taubah: 40)",
+            "Bertaqwalah kepada Allah dimana saja engkau berada. (HR. Tirmidzi)",
+            "Amalan yang paling dicintai Allah adalah amalan yang rutin dilakukan meskipun sedikit. (HR. Muslim)"
+        ];
+
+        // Initial State Structure
+        let appData = {
+            habits: {}, // Format: { "YYYY-MM-DD": { jamaah: true, dhuha: false, ... } }
+            tasbih: 0,
+            journal: {}, // Format: { "YYYY-MM-DD": "text..." }
+            darkMode: false
+        };
+
+        let progressChartInstance = null;
+
+        // --- UTILITIES ---
+        const getTodayString = () => {
+            const today = new Date();
+            // Local date string YYYY-MM-DD avoiding timezone offset issues
+            return `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
+        };
+
+        const getDateStringOffset = (offsetDays) => {
+            const date = new Date();
+            date.setDate(date.getDate() + offsetDays);
+            return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;
+        };
+
+        const loadData = () => {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved) {
+                appData = { ...appData, ...JSON.parse(saved) };
+            }
+            
+            // Ensure today's objects exist
+            const today = getTodayString();
+            if (!appData.habits[today]) appData.habits[today] = {};
+            if (!appData.journal[today]) appData.journal[today] = "";
+            
+            applyDarkMode(appData.darkMode);
+        };
+
+        const saveData = () => {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
+        };
+
+        const showToast = (message) => {
+            const toast = document.getElementById('toast');
+            toast.innerText = message;
+            toast.classList.remove('opacity-0');
+            setTimeout(() => {
+                toast.classList.add('opacity-0');
+            }, 2000);
+        };
+
+        // --- CALENDAR LOGIC ---
+        const getJavanesePasaran = (date) => {
+            // Epoch Unix (Jan 1, 1970) was Kamis Wage
+            // Pasaran cycle: Wage, Kliwon, Legi, Pahing, Pon
+            const pasaranArr = ['Wage', 'Kliwon', 'Legi', 'Pahing', 'Pon'];
+            const utcMidnight = Date.UTC(date.getFullYear(), date.getMonth(), date.getDate());
+            const daysSinceEpoch = Math.floor(utcMidnight / 86400000);
+            // adjust negative numbers properly just in case
+            const index = ((daysSinceEpoch % 5) + 5) % 5;
+            return pasaranArr[index];
+        };
+
+        const setupCalendars = () => {
+            const today = new Date();
+            
+            // Masehi
+            const masehiOptions = { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' };
+            document.getElementById('cal-masehi').innerText = today.toLocaleDateString('id-ID', masehiOptions);
+            
+            // Hijri
+            try {
+                const hijriFormatter = new Intl.DateTimeFormat('id-TN-u-ca-islamic', { day: 'numeric', month: 'long', year: 'numeric' });
+                document.getElementById('cal-hijri').innerText = hijriFormatter.format(today);
+            } catch (e) {
+                document.getElementById('cal-hijri').innerText = "Kalender Hijriyah"; // Fallback
+            }
+
+            // Javanese
+            document.getElementById('cal-jawa').innerText = `Pasaran: ${getJavanesePasaran(today)}`;
+
+            // Greeting
+            const hour = today.getHours();
+            let greeting = "Selamat Malam";
+            if (hour >= 4 && hour < 10) greeting = "Selamat Pagi";
+            else if (hour >= 10 && hour < 15) greeting = "Selamat Siang";
+            else if (hour >= 15 && hour < 18) greeting = "Selamat Sore";
+            document.getElementById('greeting-text').innerText = greeting + "!";
+
+            // Quote
+            const dayIndex = today.getDate() % QUOTES.length;
+            document.getElementById('daily-quote').innerText = QUOTES[dayIndex];
+        };
+
+
+        // --- UI RENDERING ---
+
+        const renderHabits = () => {
+            const today = getTodayString();
+            const listEl = document.getElementById('habit-list');
+            listEl.innerHTML = '';
+            
+            let completed = 0;
+
+            HABIT_LIST.forEach(habit => {
+                const isChecked = appData.habits[today][habit.id] || false;
+                if (isChecked) completed++;
+
+                const div = document.createElement('label');
+                div.className = "flex items-center justify-between bg-white dark:bg-dark-card p-2 rounded-xl shadow-sm cursor-pointer transition-transform active:scale-95 border border-transparent dark:border-gray-800";
+                
+                div.innerHTML = `
+                    <div class="flex items-center gap-2 overflow-hidden">
+                        <div class="w-8 h-8 flex-shrink-0 rounded-lg flex items-center justify-center text-sm ${habit.color}">
+                            ${habit.icon}
+                        </div>
+                        <span class="font-semibold text-gray-700 dark:text-gray-200 text-[10px] md:text-xs leading-tight truncate" title="${habit.label}">${habit.label}</span>
+                    </div>
+                    <div class="relative flex items-center flex-shrink-0 ml-1">
+                        <input type="checkbox" class="habit-checkbox opacity-0 absolute w-full h-full cursor-pointer z-10" 
+                               onchange="toggleHabit('${habit.id}', this.checked)" ${isChecked ? 'checked' : ''}>
+                        <div class="w-5 h-5 rounded border-2 border-gray-300 dark:border-gray-600 flex items-center justify-center transition-colors">
+                            <svg class="w-3 h-3 text-white opacity-0 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                        </div>
+                    </div>
+                `;
+                listEl.appendChild(div);
+            });
+
+            document.getElementById('checklist-progress').innerText = `${completed}/${HABIT_LIST.length}`;
+            calculateStreak();
+        };
+
+        const toggleHabit = (id, state) => {
+            const today = getTodayString();
+            appData.habits[today][id] = state;
+            saveData();
+            
+            if(state) {
+                showToast("Masya Allah, Lanjutkan! ✨");
+                // Vibration feedback if supported
+                if(navigator.vibrate) navigator.vibrate(50);
+            }
+            renderHabits();
+        };
+
+        const calculateStreak = () => {
+            let streak = 0;
+            let currentOffset = 0;
+            
+            while(true) {
+                const dateStr = getDateStringOffset(currentOffset);
+                const dayData = appData.habits[dateStr];
+                
+                if (dayData) {
+                    const hasCompletedAny = Object.values(dayData).some(val => val === true);
+                    if (hasCompletedAny) {
+                        streak++;
+                        currentOffset--; // go to yesterday
+                    } else {
+                        // If checking today and it's 0, it doesn't break a streak yet (might complete later)
+                        if (currentOffset === 0) {
+                            currentOffset--;
+                            continue;
+                        } else {
+                            break;
+                        }
+                    }
+                } else {
+                    if (currentOffset === 0) {
+                        currentOffset--;
+                        continue;
+                    }
+                    break;
+                }
+            }
+            document.getElementById('streak-count').innerText = streak;
+        };
+
+        // --- TASBIH LOGIC ---
+        const renderTasbih = () => {
+            document.getElementById('tasbih-count').innerText = appData.tasbih;
+        };
+
+        const incrementTasbih = () => {
+            appData.tasbih++;
+            saveData();
+            renderTasbih();
+            if(navigator.vibrate) navigator.vibrate(30);
+        };
+
+        const resetTasbih = () => {
+            appData.tasbih = 0;
+            saveData();
+            renderTasbih();
+            showToast("Counter direset");
+        };
+
+        // --- JOURNAL LOGIC ---
+        const renderJournal = () => {
+            const today = getTodayString();
+            
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('journal-date').innerText = new Date().toLocaleDateString('id-ID', options);
+            
+            const input = document.getElementById('journal-input');
+            input.value = appData.journal[today] || "";
+            
+            // Auto-save logic
+            let timeout = null;
+            input.oninput = (e) => {
+                clearTimeout(timeout);
+                document.getElementById('journal-status').innerText = "Menyimpan...";
+                timeout = setTimeout(() => {
+                    appData.journal[today] = e.target.value;
+                    saveData();
+                    document.getElementById('journal-status').innerText = "Tersimpan otomatis";
+                    setTimeout(() => { document.getElementById('journal-status').innerText = ""; }, 2000);
+                }, 1000);
+            };
+        };
+
+        // --- PROGRESS CHART LOGIC ---
+        const renderProgress = () => {
+            const labels = [];
+            const data = [];
+            let totalCompletedAllTime = 0;
+            let sumPercent7Days = 0;
+
+            // Calculate overall total
+            for (const date in appData.habits) {
+                totalCompletedAllTime += Object.values(appData.habits[date]).filter(v => v).length;
+            }
+            document.getElementById('total-completed').innerText = totalCompletedAllTime;
+
+            // Get last 7 days data for chart
+            for (let i = -6; i <= 0; i++) {
+                const dateStr = getDateStringOffset(i);
+                // Format label as DD/MM
+                const d = new Date();
+                d.setDate(d.getDate() + i);
+                labels.push(`${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}`);
+                
+                let completed = 0;
+                if(appData.habits[dateStr]) {
+                    completed = Object.values(appData.habits[dateStr]).filter(v => v).length;
+                }
+                const percent = (completed / HABIT_LIST.length) * 100;
+                data.push(percent);
+                sumPercent7Days += percent;
+            }
+
+            const avg7Days = Math.round(sumPercent7Days / 7);
+            document.getElementById('avg-7days').innerText = `${avg7Days}%`;
+
+            // Render Detailed Progress per Habit
+            const detailContainer = document.getElementById('detailed-progress');
+            detailContainer.innerHTML = '';
+            
+            HABIT_LIST.forEach(habit => {
+                let habitCompleted7Days = 0;
+                for (let i = -6; i <= 0; i++) {
+                    const dateStr = getDateStringOffset(i);
+                    if (appData.habits[dateStr] && appData.habits[dateStr][habit.id]) {
+                        habitCompleted7Days++;
+                    }
+                }
+                const habitPercent = Math.round((habitCompleted7Days / 7) * 100);
+                
+                const itemDiv = document.createElement('div');
+                itemDiv.className = "flex items-center gap-3";
+                itemDiv.innerHTML = `
+                    <div class="w-6 h-6 flex-shrink-0 rounded-md flex items-center justify-center text-xs ${habit.color}">
+                        ${habit.icon}
+                    </div>
+                    <div class="flex-1">
+                        <div class="flex justify-between mb-1">
+                            <span class="text-[11px] font-bold text-gray-700 dark:text-gray-200">${habit.label}</span>
+                            <span class="text-[10px] text-gray-500">${habitCompleted7Days}/7 (${habitPercent}%)</span>
+                        </div>
+                        <div class="w-full bg-gray-100 dark:bg-gray-800 rounded-full h-1.5 overflow-hidden">
+                            <div class="bg-sage h-full rounded-full transition-all duration-500" style="width: ${habitPercent}%"></div>
+                        </div>
+                    </div>
+                `;
+                detailContainer.appendChild(itemDiv);
+            });
+
+            // Draw Chart
+            const ctx = document.getElementById('progressChart').getContext('2d');
+            
+            if (progressChartInstance) {
+                progressChartInstance.destroy();
+            }
+            
+            const isDark = appData.darkMode;
+
+            progressChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Penyelesaian (%)',
+                        data: data,
+                        backgroundColor: isDark ? '#CEDEBD' : '#9EB384',
+                        borderRadius: 8,
+                        barThickness: 20
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            grid: {
+                                color: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'
+                            },
+                            ticks: { color: isDark ? '#A0AAB4' : '#6B7280' }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: isDark ? '#A0AAB4' : '#6B7280' }
+                        }
+                    }
+                }
+            });
+        };
+
+        // --- NAVIGATION ---
+        const switchView = (targetId) => {
+            // Update Active Nav Style
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                if(btn.dataset.target === targetId) {
+                    btn.classList.add('text-sage');
+                    btn.classList.remove('text-gray-400', 'dark:text-gray-500');
+                    btn.querySelector('i').classList.replace('ph-bold', 'ph-fill');
+                } else {
+                    btn.classList.remove('text-sage');
+                    btn.classList.add('text-gray-400', 'dark:text-gray-500');
+                    btn.querySelector('i').classList.replace('ph-fill', 'ph-bold');
+                }
+            });
+
+            // Hide all views
+            document.querySelectorAll('.view-section').forEach(el => {
+                el.classList.add('hidden');
+            });
+
+            // Show target view
+            const targetView = document.getElementById(`view-${targetId}`);
+            targetView.classList.remove('hidden');
+
+            // Specific View Logic
+            if(targetId === 'progress') {
+                renderProgress();
+            }
+        };
+
+        // --- DARK MODE LOGIC ---
+        const applyDarkMode = (isDark) => {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            
+            if (isDark) {
+                html.classList.add('dark');
+                icon.classList.replace('ph-moon', 'ph-sun');
+            } else {
+                html.classList.remove('dark');
+                icon.classList.replace('ph-sun', 'ph-moon');
+            }
+            
+            // Re-render chart if it's currently on progress view to update colors
+            if (!document.getElementById('view-progress').classList.contains('hidden')) {
+                renderProgress();
+            }
+        };
+
+        const toggleDarkMode = () => {
+            appData.darkMode = !appData.darkMode;
+            saveData();
+            applyDarkMode(appData.darkMode);
+        };
+
+
+        // --- INITIALIZATION ---
+        window.onload = () => {
+            loadData();
+            setupCalendars();
+            renderHabits();
+            renderTasbih();
+            renderJournal();
+            
+            // Set Initial View
+            switchView('home');
+        };
+
+    </script>
+</body>
+</html>
